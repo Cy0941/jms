@@ -1,5 +1,6 @@
 package cxy.spring.jms.listener;
 
+import cxy.spring.jms.model.Email;
 import cxy.spring.jms.service.ProducerService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,5 +33,11 @@ public class ConsumerListenerTest {
     @Test
     public void onMessage() throws Exception {
         producerService.sendMessage(destination, "测试 自定义回复地址 。。。");
+    }
+
+    @Test
+    public void sendEmail() throws Exception {
+        Email email = new Email("zhangsan@xxx.com","主题","内容");
+        producerService.sendSerializeObj(destination,email);
     }
 }

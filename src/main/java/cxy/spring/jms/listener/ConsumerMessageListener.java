@@ -1,9 +1,11 @@
 package cxy.spring.jms.listener;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.TextMessage;
+import cxy.spring.jms.model.Email;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.support.converter.MessageConverter;
+
+import javax.jms.*;
+import javax.xml.soap.Text;
 
 /**
  * Function: MessageListener - 最原始的消息监听器，是JMS规范中定义的一个接口  --  只能用来接收消息
@@ -16,12 +18,27 @@ import javax.jms.TextMessage;
 
 public class ConsumerMessageListener implements MessageListener {
 
+    @Autowired
+    private MessageConverter messageConverter;
+
     public void onMessage(Message message) {
-        TextMessage text = (TextMessage)message;
-        try {
-            System.err.println("ConsumerMessageListener 消息内容是："+text.getText());
-        } catch (JMSException e) {
-            e.printStackTrace();
+        if (message instanceof Text) {
+            TextMessage text = (TextMessage) message;
+            try {
+                System.err.println("ConsumerMessageListener 消息内容是：" + text.getText());
+            } catch (JMSException e) {
+                e.printStackTrace();
+            }
+        } else if (message instanceof ObjectMessage) {
+            ObjectMessage objectMessage = (ObjectMessage) message;
+            try {
+                //Email email = (Email) objectMessage.getObject();
+                //使用自定义消息转换器
+                Email email = (Email) messageConverter.fromMessage(objectMessage);
+                System.err.println("ConsumerMessageListener 消息内容是：" + email);
+            } catch (JMSException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

@@ -2,6 +2,7 @@ package cxy.spring.jms.service;
 
 
 import javax.jms.Destination;
+import java.io.Serializable;
 
 /**
  * Function: TODO
@@ -13,6 +14,18 @@ import javax.jms.Destination;
  */
 public interface ProducerService {
 
+    /**
+     * 简单String消息发送
+     * @param destination
+     * @param message
+     */
     void sendMessage(Destination destination, final String message);
+
+    /**
+     * 发送序列化对象
+     * @param destination
+     * @param obj
+     */
+    void sendSerializeObj(Destination destination, final Serializable obj);
 
 }

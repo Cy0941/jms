@@ -52,8 +52,10 @@
             如果指定的消息处理实体是一个普通的Java时，Spring将利用Message进行类型转换之后的对象作为参数通过反射去调用真正的消息处理实体的处理方法
             TODO 如果不指定此属性，Spring会默认调用目标处理器的handleMessage方法
         -->
-        <property name="defaultListenerMethod" value="receiveAndAutoResp"/>
+        <property name="defaultListenerMethod" value="receiveMessage"/>
         <property name="defaultResponseDestination" ref="responseQueue"/>
+        <!--指定消息转换器-->
+        <property name="messageConverter" ref="emailMessageConverter"/>
     </bean>
 
     <bean class="org.springframework.jms.listener.DefaultMessageListenerContainer" id="responseQueueMessageListenerContainer">
@@ -104,7 +106,12 @@
         <property name="connectionFactory" ref="connectionFactory"/>
         <!--TODO defaultDestinationName 会被默认解析为 ActiveMQQueue -->
         <!--<property name="defaultDestination" ref="activeMQQueue"/>-->
+
+        <property name="messageConverter" ref="emailMessageConverter"/>
     </bean>
+
+    <!--自定义MessMessageConverter-->
+    <bean class="cxy.spring.jms.converter.EmailMessageConverter" id="emailMessageConverter"/>
 
     <!--池化ConnectionFactory TODO 用来将 Connection & Session & MessageProducer 池化-->
     <bean class="org.apache.activemq.pool.PooledConnectionFactory" id="pooledConnectionFactory">
@@ -115,6 +122,13 @@
     <!--真正可以产生Connection的ConnectionFactory - 由对应的 JMS 服务厂商提供-->
     <bean class="org.apache.activemq.ActiveMQConnectionFactory" id="activeMQConnectionFactory">
         <property name="brokerURL" value="tcp://localhost:61616"/>
+        <!--ActiveMQ 5.12.2 | 5.13.1 版本在使用 ObjectMessage 进行序列化或反序列化自定义对象时，为了安全必须指定目标类所在的包-->
+        <!--<property name="trustAllPackages" value="true"/>-->
+        <property name="trustedPackages">
+            <list>
+                <value>cxy.spring.jms.model</value>
+            </list>
+        </property>
     </bean>
 
     <!--

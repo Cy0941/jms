@@ -1,5 +1,7 @@
 package cxy.spring.jms.listener;
 
+import cxy.spring.jms.model.Email;
+
 /**
  * Function: TODO
  * Reason: TODO ADD REASON(可选).</br>
@@ -16,6 +18,14 @@ public class ConsumerListener {
 
     public void receiveMessage(String message) {
         System.out.println("ConsumerListener通过 receiveMessage 接收到一个纯文本消息，消息内容是：" + message);
+    }
+
+    /**
+     * 通过消息转换器可以返回反序列化后的对象并转换为目标实体再调用消息处理方法
+     * @param email
+     */
+    public void receiveMessage(Email email) {
+        System.out.println("ConsumerListener通过 receiveMessage 接收到一个 Email 消息，消息内容是：" + email);
     }
 
     /**

@@ -1,5 +1,6 @@
 package cxy.spring.jms.service.impl;
 
+import cxy.spring.jms.model.Email;
 import cxy.spring.jms.service.ProducerService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +35,12 @@ public class ProducerServiceImplTest {
         for (int i = 0; i < 2; i++) {
             producerService.sendMessage(destination, "您好，生产者！这是消息：" + (i + 1));
         }
+    }
+
+    @Test
+    public void sendSerializeObj(){
+        Email email = new Email("zhangsan@xxx.com","主题","内容");
+        producerService.sendSerializeObj(destination,email);
     }
 
 }

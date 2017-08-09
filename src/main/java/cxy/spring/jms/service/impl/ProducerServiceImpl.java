@@ -8,6 +8,7 @@ import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
 
 import javax.jms.*;
+import java.io.Serializable;
 
 /**
  * Function: TODO
@@ -45,5 +46,15 @@ public class ProducerServiceImpl implements ProducerService {
         //        return textMessage;
         //    }
         //});
+    }
+
+    public void sendSerializeObj(Destination destination, final Serializable obj) {
+        /*jmsTemplate.send(destination, new MessageCreator() {
+            public Message createMessage(Session session) throws JMSException {
+                ObjectMessage objectMessage = session.createObjectMessage(obj);
+                return objectMessage;
+            }
+        });*/
+        jmsTemplate.convertAndSend(destination,obj);
     }
 }
