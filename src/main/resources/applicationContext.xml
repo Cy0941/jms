@@ -17,6 +17,7 @@
                 Destination
                 接收到消息后进行消息处理的MessageListener
         -->
+    <!--1、MessageListener - 单纯消息接收-->
     <bean class="org.springframework.jms.listener.DefaultMessageListenerContainer" id="listenerContainer">
         <property name="connectionFactory" ref="connectionFactory"/>
         <property name="destination" ref="activeMQQueue"/>
@@ -25,6 +26,7 @@
     <!--自定义消息处理MessageListener-->
     <bean class="cxy.spring.jms.listener.ConsumerMessageListener" id="consumerMessageListener"/>
 
+    <!--2、SessionAwareMessageListener<T> - 接收到消息后可以通知Destination已接收到消息-->
     <bean class="org.springframework.jms.listener.DefaultMessageListenerContainer" id="sessionAwareListenerContainer">
         <property name="connectionFactory" ref="connectionFactory"/>
         <property name="destination" ref="sessionAwareQueue"/>
@@ -33,6 +35,33 @@
     <bean class="cxy.spring.jms.listener.ConsumerSessionAwareMessageListener" id="sessionAwareMessageListener">
         <property name="destination" ref="activeMQQueue"/><!--回复消息destination-->
     </bean>
+
+    <!--3、MessageListenerAdapter - 自定义消息接收实体及处理方法-->
+    <!--4、MessageListenerAdapter - 当消息处理器方法返回值不为空（空 | null | void）时，Spring会自动将返回消息封装为JMSMessage对象并返回到已设置的Destination[两种方法实现 message.setJMSReplyTo 方法&&优先级更高 || MessageListenerAdapter的defaultResponseDestination属性]-->
+    <bean class="org.springframework.jms.listener.DefaultMessageListenerContainer" id="messageListenerAdapterContainer">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="destination" ref="adapterQueue"/>
+        <property name="messageListener" ref="messageListenerAdapter"/>
+    </bean>
+    <bean class="org.springframework.jms.listener.adapter.MessageListenerAdapter" id="messageListenerAdapter">
+        <!--设置自定义的消息处理实体类-->
+        <property name="delegate">
+            <bean class="cxy.spring.jms.listener.ConsumerListener"/>
+        </property>
+        <!--
+            如果指定的消息处理实体是一个普通的Java时，Spring将利用Message进行类型转换之后的对象作为参数通过反射去调用真正的消息处理实体的处理方法
+            TODO 如果不指定此属性，Spring会默认调用目标处理器的handleMessage方法
+        -->
+        <property name="defaultListenerMethod" value="receiveAndAutoResp"/>
+        <property name="defaultResponseDestination" ref="responseQueue"/>
+    </bean>
+
+    <bean class="org.springframework.jms.listener.DefaultMessageListenerContainer" id="responseQueueMessageListenerContainer">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="destination" ref="responseQueue"/>
+        <property name="messageListener" ref="responseQueueListener"/>
+    </bean>
+    <bean class="cxy.spring.jms.listener.ResponseQueueListener" id="responseQueueListener"/>
 
 
     <!-- ====================================================================================== -->
@@ -56,6 +85,16 @@
     <bean class="org.apache.activemq.command.ActiveMQQueue" id="sessionAwareQueue">
         <constructor-arg>
             <value>sessionAwareQueue</value>
+        </constructor-arg>
+    </bean>
+    <bean class="org.apache.activemq.command.ActiveMQQueue" id="adapterQueue">
+        <constructor-arg>
+            <value>adapterQueue</value>
+        </constructor-arg>
+    </bean>
+    <bean class="org.apache.activemq.command.ActiveMQQueue" id="responseQueue">
+        <constructor-arg>
+            <value>responseQueue</value>
         </constructor-arg>
     </bean>
 
