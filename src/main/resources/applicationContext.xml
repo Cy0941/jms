@@ -43,8 +43,13 @@
         <property name="destination" ref="adapterQueue"/>
         <property name="messageListener" ref="messageListenerAdapter"/>
         <!--激活Spring事务管理支持-->
-        <property name="sessionTransacted" value="true"/>
+        <!--<property name="sessionTransacted" value="true"/>-->
+        <property name="transactionManager" ref="jtaTransactionManager"/>
     </bean>
+
+    <!--支持消息接收与后续消息操作（操作数据库）的分布式事务管理器 cxy 需要底层 ConnectionFactory 同时支持分布式事务 & 忽略已设置的sessionTransacted属性-->
+    <bean class="org.springframework.transaction.jta.JtaTransactionManager" id="jtaTransactionManager"/>
+
     <bean class="org.springframework.jms.listener.adapter.MessageListenerAdapter" id="messageListenerAdapter">
         <!--设置自定义的消息处理实体类-->
         <property name="delegate">
