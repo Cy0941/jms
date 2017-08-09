@@ -18,10 +18,25 @@ import java.io.Serializable;
  * @since: Thinkingbar Web Project 1.0
  */
 public class EmailMessageConverter implements MessageConverter {
+    /**
+     * 发送
+     * @param object
+     * @param session
+     * @return
+     * @throws JMSException
+     * @throws MessageConversionException
+     */
     public Message toMessage(Object object, Session session) throws JMSException, MessageConversionException {
         return session.createObjectMessage((Serializable)object);
     }
 
+    /**
+     * 消息处理获取
+     * @param message
+     * @return
+     * @throws JMSException
+     * @throws MessageConversionException
+     */
     public Object fromMessage(Message message) throws JMSException, MessageConversionException {
         ObjectMessage objectMessage = (ObjectMessage) message;
         return objectMessage.getObject();

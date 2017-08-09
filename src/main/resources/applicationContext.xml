@@ -42,6 +42,8 @@
         <property name="connectionFactory" ref="connectionFactory"/>
         <property name="destination" ref="adapterQueue"/>
         <property name="messageListener" ref="messageListenerAdapter"/>
+        <!--激活Spring事务管理支持-->
+        <property name="sessionTransacted" value="true"/>
     </bean>
     <bean class="org.springframework.jms.listener.adapter.MessageListenerAdapter" id="messageListenerAdapter">
         <!--设置自定义的消息处理实体类-->
@@ -56,6 +58,10 @@
         <property name="defaultResponseDestination" ref="responseQueue"/>
         <!--指定消息转换器-->
         <property name="messageConverter" ref="emailMessageConverter"/>
+        <!--cxy 不使用消息转换器 - 即使不配置消息转换器会默认使用SimpleMessageConverter-->
+        <!--<property name="messageConverter">
+            <null/>
+        </property>-->
     </bean>
 
     <bean class="org.springframework.jms.listener.DefaultMessageListenerContainer" id="responseQueueMessageListenerContainer">

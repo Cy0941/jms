@@ -26,6 +26,9 @@ public class ConsumerListener {
      */
     public void receiveMessage(Email email) {
         System.out.println("ConsumerListener通过 receiveMessage 接收到一个 Email 消息，消息内容是：" + email);
+        //if (1 == 1) {
+        //    throw new RuntimeException("Error");
+        //}
     }
 
     /**
